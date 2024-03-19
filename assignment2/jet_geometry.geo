@@ -28,12 +28,12 @@ Transfinite Curve {3, 1} = 80 Using Progression 1;
 Transfinite Surface {3};
 Recombine Surface {1,3};
 //+
-//Physical Surface("inlet", 5) = {4};
-//Physical Surface("outlet", 6) = {2};
-//Physical Surface("top wall", 7) = {3};
-//Physical Surface("bottom wall", 8) = {1};
+Physical Surface("inlet", 5) = {4};
+Physical Surface("outlet", 6) = {2};
+Physical Surface("top wall", 7) = {3};
+Physical Surface("bottom wall", 8) = {1};
 //+
-Physical Curve("inlet", 9) = {4};
-Physical Curve("outlet", 10) = {2};
-Physical Curve("top", 11) = {3};
-Physical Curve("bottom", 12) = {1};
+//Physical Curve("inlet", 9) = {4};
+//Physical Curve("outlet", 10) = {2};
+//Physical Curve("top", 11) = {3};
+//Physical Curve("bottom", 12) = {1};
