@@ -90,7 +90,7 @@ def main():
         nVertex_CHTMarker = SU2Driver.GetNumberMarkerNodes(CHTMarkerID)
     
         
-    marker_coords = driver.MarkerCoordinates(CHTMarkerID) 
+    marker_coords = SU2Driver.MarkerCoordinates(CHTMarkerID) 
     for i_vertex in range(nVertex_CHTMarker):
        x = marker_coords(i_vertex, 0) 
        y = marker_coords(i_vertex, 1)
