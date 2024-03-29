@@ -94,7 +94,7 @@ def main():
     for i_vertex in range(nVertex_CHTMarker):
        x = marker_coords(i_vertex, 0) 
        y = marker_coords(i_vertex, 1)
-       temperature = 300+x+y
+       temperature = 293+x+y
        SU2Driver.SetMarkerCustomTemperature(CHTMarkerID, i_vertex, temperature)
        
        
