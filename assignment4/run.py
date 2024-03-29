@@ -86,16 +86,31 @@ def main():
     # Number of vertices on the specified marker (per rank)
     nVertex_CHTMarker = 0         # total number of vertices (physical + halo)
 
-    if CHTMarkerID != None:
+   if CHTMarkerID != None:
         nVertex_CHTMarker = SU2Driver.GetNumberMarkerNodes(CHTMarkerID)
-    
         
-    marker_coords = SU2Driver.MarkerCoordinates(CHTMarkerID) 
-    for i_vertex in range(nVertex_CHTMarker):
-       x = marker_coords(i_vertex, 0) 
-       y = marker_coords(i_vertex, 1)
-       temperature = 293+x+y
-       SU2Driver.SetMarkerCustomTemperature(CHTMarkerID, i_vertex, temperature)
+        if nVertex_CHTMarker > 0:
+           marker_coords = SU2Driver.MarkerCoordinates(CHTMarkerID) 
+           dx=1.2/100          # from mesh where length along x is 1.2 and there are 100 points along this length
+           dy=7/80           # from mesh settings where lwngth along y is 7 and there are 80 points along this length in the mesh
+        
+           while (x<1.2 and y<7):
+        
+              for i_vertex in range(nVertex_CHTMarker):
+                  x = marker_coords(i_vertex, 0) 
+                  y = marker_coords(i_vertex, 1)
+                  temperature = 293+x+y
+                  SU2Driver.SetMarkerCustomTemperature(CHTMarkerID, i_vertex, temperature)
+             
+              SU2Driver.BoundaryConditionsUpdate()
+              SU2Driver.Run()
+              SU2Driver.Postprocess()
+           
+              SU2Driver.Update()
+          # Update control parameters
+          
+              x += dx
+              y +=dy
        
        
   if rank == 0:
