@@ -21,3 +21,4 @@ Recombine Surface {1,3};
 Physical Curve("farfield", 9) = {1,3};
 Physical Curve("plate", 10) = {2,4};
 Physical Surface("fluid", 1) = {1};
+Mesh 2;
