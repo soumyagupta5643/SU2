@@ -1,29 +1,3 @@
-#!/usr/bin/env python
-
-## \file launch_unsteady_CHT_FlatPlate.py
-#  \brief Python script to launch SU2_CFD with customized unsteady boundary conditions using the Python wrapper.
-#  \author David Thomas
-#  \version 8.0.1 "Harrier"
-#
-# SU2 Project Website: https://su2code.github.io
-#
-# The SU2 Project is maintained by the SU2 Foundation
-# (http://su2foundation.org)
-#
-# Copyright 2012-2024, SU2 Contributors (cf. AUTHORS.md)
-#
-# SU2 is free software; you can redistribute it and/or
-# modify it under the terms of the GNU Lesser General Public
-# License as published by the Free Software Foundation; either
-# version 2.1 of the License, or (at your option) any later version.
-#
-# SU2 is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU
-# Lesser General Public License for more details.
-#
-# You should have received a copy of the GNU Lesser General Public
-# License along with SU2. If not, see <http://www.gnu.org/licenses/>.
 
 # ----------------------------------------------------------------------
 #  Imports
@@ -61,71 +35,66 @@ def main():
 
   # Initialize the corresponding driver of SU2, this includes solver preprocessing
   try:
+      print("Initializing SU2Driver...")
       SU2Driver = pysu2.CSinglezoneDriver(options.filename, options.nZone, comm);
+      print("SU2Driver initialized successfully.")
+      
   except TypeError as exception:
-    print('A TypeError occured in pysu2.CDriver : ',exception)
-    if options.with_MPI == True:
-      print('ERROR : You are trying to initialize MPI with a serial build of the wrapper. Please, remove the --parallel option that is incompatible with a serial build.')
-    else:
-      print('ERROR : You are trying to launch a computation without initializing MPI but the wrapper has been built in parallel. Please add the --parallel option in order to initialize MPI for the wrapper.')
-    return
+      print('A TypeError occured in pysu2.CDriver : ',exception)
+    
+      if options.with_MPI == True:
+        print('ERROR : You are trying to initialize MPI with a serial build of the wrapper. Please, remove the --parallel option that is incompatible with a serial build.')
+      else:
+        print('ERROR : You are trying to launch a computation without initializing MPI but the wrapper has been built in parallel. Please add the --parallel option in order to initialize MPI for the wrapper.')
+      return
 
-    CHTMarkerID = None
-    CHTMarker = 'plate'       # Specified by the user
+  CHTMarkerID = None
+  CHTMarker = 'plate'       # Specified by the user
 
     # Get all the tags with the CHT option
-    CHTMarkerList =  SU2Driver.GetCHTMarkerTags()
+  CHTMarkerList =  SU2Driver.GetCHTMarkerTags()
 
     # Get all the markers defined on this rank and their associated indices.
-    allMarkerIDs = SU2Driver.GetMarkerIndices()
+  allMarkerIDs = SU2Driver.GetMarkerIndices()
 
     # Check if the specified marker has a CHT option and if it exists on this rank.
-    if CHTMarker in CHTMarkerList and CHTMarker in allMarkerIDs.keys():
-        CHTMarkerID = allMarkerIDs[CHTMarker]
+  if CHTMarker in CHTMarkerList and CHTMarker in allMarkerIDs.keys():
+      CHTMarkerID = allMarkerIDs[CHTMarker]
 
     # Number of vertices on the specified marker (per rank)
-    nVertex_CHTMarker = 0         # total number of vertices (physical + halo)
+  nVertex_CHTMarker = 0   
+  
+  def __init__(self):
+        # Initialize any necessary variables or parameter
 
-   if CHTMarkerID != None:
+
+      if CHTMarkerID != None:
         nVertex_CHTMarker = SU2Driver.GetNumberMarkerNodes(CHTMarkerID)
         
-        if nVertex_CHTMarker > 0:
-           marker_coords = SU2Driver.MarkerCoordinates(CHTMarkerID) 
-           dx=1.2/100          # from mesh where length along x is 1.2 and there are 100 points along this length
-           dy=7/80           # from mesh settings where lwngth along y is 7 and there are 80 points along this length in the mesh
+      if nVertex_CHTMarker > 0:
+        marker_coords = SU2Driver.MarkerCoordinates(CHTMarkerID) 
         
-           while (x<1.2 and y<7):
         
-              for i_vertex in range(nVertex_CHTMarker):
-                  x = marker_coords(i_vertex, 0) 
-                  y = marker_coords(i_vertex, 1)
-                  temperature = 293+x+y
-                  SU2Driver.SetMarkerCustomTemperature(CHTMarkerID, i_vertex, temperature)
+      #while (x<1.2 and y<7):
+        
+      for i_vertex in range(nVertex_CHTMarker):
+        x = marker_coords(i_vertex, 0) 
+        y = marker_coords(i_vertex, 1)
+        temperature = 293+x+y
+        SU2Driver.SetMarkerCustomTemperature(CHTMarkerID, i_vertex, temperature)
              
-              SU2Driver.BoundaryConditionsUpdate()
-              SU2Driver.Run()
-              SU2Driver.Postprocess()
+      SU2Driver.BoundaryConditionsUpdate()
+      SU2Driver.Run()
+      SU2Driver.Postprocess()
            
-              SU2Driver.Update()
-          # Update control parameters
-          
-              x += dx
-              y +=dy
-       
-       
-  if rank == 0:
-    print("\n------------------------------ Begin Solver -----------------------------\n")
-  sys.stdout.flush()
-  if options.with_MPI == True:
-    comm.Barrier()
-
-
-    SU2Driver.BoundaryConditionsUpdate()
-    print("Running SU2Driver...")
-    SU2Driver.Run()
-    SU2Driver.Postprocess()
-    
-    if rank == 0:
+      SU2Driver.Update()
+     # stopCalc = SU2Driver.Monitor(TimeIter)
+     # SU2Driver.Output(TimeIter)
+     # if (stopCalc == True):
+     #    break
+              
+ 
+      if rank == 0:
         print("\n------------------------------ End Solver -----------------------------\n")
 
 # -------------------------------------------------------------------
