@@ -73,25 +73,20 @@ def main():
   sys.stdout.flush()
   if options.with_MPI == True:
     comm.Barrier()
-  x=0
-  y=0
-  while (x < 1 and y < 4):
-    # Time iteration preprocessing
-    for iVertex in range(nVertex_CHTMarker):
-       x = marker_coords(iVertex, 0) 
-       y = marker_coords(iVertex, 1)
-       temperature = 293+x+y
-       SU2Driver.SetMarkerCustomTemperature(CHTMarkerID, iVertex, temperature)
+    
+  for iVertex in range(nVertex_CHTMarker):
+     x = marker_coords(iVertex, 0) 
+     y = marker_coords(iVertex, 1)
+     temperature = 300+x
+     SU2Driver.SetMarkerCustomTemperature(CHTMarkerID, iVertex, temperature)
 
     # Tell the SU2 drive to update the boundary conditions
-    SU2Driver.BoundaryConditionsUpdate()
+  SU2Driver.BoundaryConditionsUpdate()
     # Run one time iteration (e.g. dual-time)
-    SU2Driver.Run()
+  SU2Driver.Run()
     # Postprocess the solver and exit cleanly
-    SU2Driver.Postprocess()
+  SU2Driver.Postprocess()
    
-    
-
 
 # -------------------------------------------------------------------
 #  Run Main Program
